@@ -1,0 +1,36 @@
+# Build directories
+build/
+build-win/
+build-asan/
+build-*/
+
+# Compiled artifacts
+*.o
+*.obj
+*.a
+*.lib
+*.exe.orig
+moc_*
+ui_*
+qrc_*
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Test/临时产物
+test_*.raw
+test_*.bmp
+test_*.ppm
+test_*.txt
+test_*.ini
+*.ppm
+
+# 用户私有 RAW 数据（不入库）
+bayer_*.raw
+*.sraw
+
+# IDE
+.vs/
+.vscode/
+.idea/
