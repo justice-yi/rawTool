@@ -732,3 +732,28 @@ Bypass ISP 原始预览
 - Windows exe 重建（20.8MB）部署 dist/，带 bayer_normal_4k.raw 原生试运行正常。
 
 **教训**：GUI 代码路径（构造→打开→处理→显示）此前只有“进程启动”级别的验证，没有“真实打开文件”级别的验证——本轮命令行打开 + 消毒器组合已补上该盲区。
+
+---
+
+## 追加交付 — 2026-11-05 00:55（用户实测修复 ×2 + GitHub 发布）
+
+**用户实测报告 #4：Analysis 直方图崩溃（4K 文件必现）**
+- 根因（P0，越界读）：AnalysisDialog::drawHistogram 将 Format_RGB888（3B/像素）的
+  scanLine 强转为 QRgb*（4B/像素）读取——每行越界 25%，小图侥幸、4K 必崩。
+  修复：按字节读 line[x*3+0/1/2]。
+- 验证：新增 main.cpp `--analysis` 自动打开通道 + ASan offscreen 打开 4K 文件
+  自动弹直方图对话框 90s：零消毒器报告。
+
+**用户需求 #5：默认平铺**
+- 根因：fitToWindow 只在打开时执行一次，窗口尺寸变化后缩放不再适配。
+- 修复：新增 fit 模式——打开文件/窗口 resize 自动重算平铺；滚轮/菜单手动缩放
+  自动退出 fit 模式；主窗口默认最大化。
+
+**GitHub 发布**
+- 仓库 https://github.com/justice-yi/rawTool.git main 分支推送成功（37 文件，含 dist exe 与样图）。
+- 网络：直连 SSH 被重置 → ~/.ssh/config 走 ssh.github.com:443 + Python CONNECT
+  隧道脚本（proxy_connect.py，经系统代理 127.0.0.1:12450），密钥已在账号注册。
+- 临时文件清理：build*/、4K 预览 BMP、测试产物、Desktop 散落分析文件；原始 exe
+  与 rea_work 证据未动。.gitignore 就位。
+
+**环境注意**：GitHub 密码认证已不可用于 push（必须 PAT/SSH）——SSH 隧道即长期方案。
